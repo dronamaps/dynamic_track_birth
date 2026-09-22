@@ -624,7 +624,7 @@ export default function Home() {
             <span />
           </div>
           <div>
-            <h1>Crop Row Gap Analyzer</h1>
+            <h1>Dynamic Track Birth Analyzer</h1>
             <p>Orthomosaic intelligence console</p>
           </div>
         </div>
