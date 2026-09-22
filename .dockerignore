@@ -1,0 +1,8 @@
+.git
+.sites-runtime
+.wrangler
+dist
+node_modules
+__pycache__
+*.pyc
+upload

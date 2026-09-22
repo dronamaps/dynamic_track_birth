@@ -1,0 +1,11 @@
+celery[redis]>=5.4,<6
+fastapi>=0.115,<1
+numpy>=2.0,<3
+opencv-python-headless>=4.10,<5
+pyproj>=3.7,<4
+python-multipart>=0.0.20,<1
+rasterio>=1.4,<2
+redis>=5,<7
+rio-tiler>=7,<9
+scipy>=1.14,<2
+uvicorn[standard]>=0.34,<1

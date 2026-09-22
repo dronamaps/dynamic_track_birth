@@ -1,0 +1,83 @@
+services:
+  proxy:
+    image: caddy:2-alpine
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATA_ROOT: /data/jobs
+      REDIS_URL: redis://redis:6379/0
+      MAX_UPLOAD_BYTES: "524288000"
+      CORS_ORIGINS: http://localhost:${APP_PORT:-8080}
+    volumes:
+      - analysis_data:/data/jobs
+    depends_on:
+      redis:
+        condition: service_healthy
+    expose:
+      - "8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"
+      interval: 15s
+      timeout: 5s
+      retries: 8
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command:
+      - celery
+      - -A
+      - backend.celery_app:celery_app
+      - worker
+      - --loglevel=INFO
+      - --concurrency=${WORKER_CONCURRENCY:-1}
+    environment:
+      DATA_ROOT: /data/jobs
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - analysis_data:/data/jobs
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  analysis_data:
+  redis_data:
