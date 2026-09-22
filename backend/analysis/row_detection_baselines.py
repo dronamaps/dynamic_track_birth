@@ -34,7 +34,7 @@ Per field, per method:
                                      for strip/strip_nb), world coords if GeoTIFF
     {prefix}_{method}_row_stats.csv   per-row length/gap-count/gap-% table
     {prefix}_{method}_gaps.geojson    detected gap vectors, world coords if GeoTIFF
-Aggregate:
+Aggregate: 
     comparison.csv                  one row per (field, method) with counts,
                                     total gap length, overall gap %, spacing
 
